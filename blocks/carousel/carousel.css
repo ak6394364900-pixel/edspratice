@@ -85,7 +85,7 @@
   padding: 14px 28px;
   border-radius: 4px;
   background: #1473e6;
-  color: #fff;
+  color: #fff !important;
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
