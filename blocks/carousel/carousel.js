@@ -24,18 +24,63 @@ export default function decorate(block) {
   rows.forEach((row, index) => {
     const cells = [...row.children];
 
-    // Expected columns:
-    // 0 = Image
-    // 1 = Title
-    // 2 = Description
-    // 3 = CTA
-
     const slide = document.createElement('article');
     slide.className = 'carousel-slide';
 
     if (index === 0) {
       slide.classList.add('active');
     }
+
+    const content = document.createElement('div');
+    content.className = 'carousel-content';
+
+    if (cells.length === 1) {
+      const cell = cells[0];
+      const image = cell.querySelector('img, picture img');
+
+      if (image) {
+        const imageWrapper = document.createElement('div');
+        imageWrapper.className = 'carousel-image';
+        imageWrapper.append(image.cloneNode(true));
+        slide.append(imageWrapper);
+      }
+
+      const titleNode = cell.querySelector('h1, h2, h3, h4, h5, h6');
+      if (titleNode) {
+        const title = document.createElement('h2');
+        title.className = 'carousel-title';
+        title.innerHTML = titleNode.innerHTML;
+        content.append(title);
+      }
+
+      const description = cell.cloneNode(true);
+      description.querySelectorAll('h1, h2, h3, h4, h5, h6, a, picture, img, figure').forEach((el) => el.remove());
+
+      if (description.textContent.trim()) {
+        const descriptionWrap = document.createElement('div');
+        descriptionWrap.className = 'carousel-description';
+        descriptionWrap.innerHTML = description.innerHTML.trim();
+        content.append(descriptionWrap);
+      }
+
+      const cta = cell.querySelector('a');
+      if (cta) {
+        const link = cta.cloneNode(true);
+        link.classList.add('carousel-cta');
+        content.append(link);
+      }
+
+      slide.append(content);
+      rows[index] && moveInstrumentation(rows[index], slide);
+      track.append(slide);
+      return;
+    }
+
+    // Expected columns:
+    // 0 = Image
+    // 1 = Title
+    // 2 = Description
+    // 3 = CTA
 
     // Image
     if (cells[0]) {
@@ -50,10 +95,6 @@ export default function decorate(block) {
 
       slide.append(imageWrapper);
     }
-
-    // Content
-    const content = document.createElement('div');
-    content.className = 'carousel-content';
 
     // Title
     if (cells[1]) {
